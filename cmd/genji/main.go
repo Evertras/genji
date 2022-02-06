@@ -6,12 +6,10 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/evertras/genji/pkg/disk"
+	"github.com/evertras/genji/pkg/screens/disk"
 )
 
 type model struct {
-	diskStats *disk.DiskStats // Disk stats
-
 	// TODO: Leftover from tutorial, keeping for reference
 	choices  []string         // items on the to-do list
 	cursor   int              // which to-do list item our cursor is pointing at
@@ -31,14 +29,11 @@ func initialModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	return checkDisk
+	return nil
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-
-	case *disk.DiskStats:
-		m.diskStats = msg
 
 	// Is it a key press?
 	case tea.KeyMsg:
@@ -83,12 +78,6 @@ func (m model) View() string {
 	// The header
 	var s string
 
-	if m.diskStats != nil {
-		s = fmt.Sprintf("Disk stats: %s / %s free", m.diskStats.Free, m.diskStats.Total)
-	} else {
-		s = "Reading disk..."
-	}
-
 	s += "\n\nWhat should we buy at the market?\n\n"
 
 	// Iterate over our choices
@@ -117,27 +106,8 @@ func (m model) View() string {
 	return s
 }
 
-// TODO: formalize this?
-type errMsg struct {
-	err error
-}
-
-func (e errMsg) Error() string {
-	return e.err.Error()
-}
-
-func checkDisk() tea.Msg {
-	stats, err := disk.DiskStatsWd()
-
-	if err != nil {
-		return errMsg{err}
-	}
-
-	return stats
-}
-
 func main() {
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(disk.New())
 	if err := p.Start(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)

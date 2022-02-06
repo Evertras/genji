@@ -5,6 +5,6 @@ default:
 .PHONY: build-all
 build-all: ./build/pi/genji
 
-./build/pi/genji: ./cmd/genji/main.go ./pkg/disk/*.go
+./build/pi/genji: ./cmd/genji/main.go ./pkg/screens/disk/*.go
 	GOOS=linux GOARCH=arm GOARM=5 go build -o ./build/pi/genji ./cmd/genji/main.go
 
